@@ -1,0 +1,5 @@
+[alias]
+	ca = commit --amend
+	cane = commit --amend --no-edit
+	lol = log --graph --decorate --pretty=oneline --abbrev-commit
+	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
