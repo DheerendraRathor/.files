@@ -17,4 +17,14 @@ fi
 # Brew bash completion
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
+# Map ls to exa
+if hash exa >/dev/null 2>&1; then
+    alias ls=exa
+fi
+
+# Add caffienate to common build commands
+if hash caffeinate >/dev/null 2>&1; then
+    alias make='caffeinate -i make'
+fi
+
 source "$HOME"/.bash_mine
