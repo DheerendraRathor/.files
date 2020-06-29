@@ -19,7 +19,7 @@ fi
 
 # Map ls to exa
 if hash exa >/dev/null 2>&1; then
-    alias ls=exa
+    alias ls='exa --header'
 fi
 
 # Add caffienate to common build commands
