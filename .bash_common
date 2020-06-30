@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-for file in "$OSUM_DOT_FILES"/.{bash_prompt,bash_utils}; do
+for file in "$OSUM_DOT_FILES"/.{bash_prompt,bash_utils,aliases}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 
@@ -16,15 +16,5 @@ fi
 
 # Brew bash completion
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
-
-# Map ls to exa
-if hash exa >/dev/null 2>&1; then
-    alias ls='exa --header'
-fi
-
-# Add caffienate to common build commands
-if hash caffeinate >/dev/null 2>&1; then
-    alias make='caffeinate -i make'
-fi
 
 source "$HOME"/.bash_mine

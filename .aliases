@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Map ls to exa
+if hash exa >/dev/null 2>&1; then
+    alias ls='exa --header'
+fi
+
+# Map cat to bat
+if hash bat >/dev/null 2>&1; then
+    alias cat='bat --style=plain'
+fi
+
+# Add caffienate to common build commands
+if hash caffeinate >/dev/null 2>&1; then
+    alias make='caffeinate -i make'
+fi
