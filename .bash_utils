@@ -31,3 +31,17 @@ rmp() {
     path="$(IFS=$':'; echo "${new_paths[*]}")"
     export PATH="$(dedup_pathis_str "$path")"
 }
+
+sync_files() {
+    if [ -z ${OSUM_DOT_FILES+x} ];
+    then
+        >&2 echo "OSUM_DOT_FILES is not set"
+        exit 1
+    fi
+
+    cd "$OSUM_DOT_FILES"
+    git pull origin master
+
+    source "$HOME/.bashrc"
+    source "$HOME/.bash_profile"
+}

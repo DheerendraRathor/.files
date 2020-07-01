@@ -10,8 +10,6 @@ if [ -z "$HOME" ]; then echo "\$HOME is not set" >&2; exit 1; fi
 
 cd "$(dirname "${BASH_SOURCE}")";
 
-git pull origin master;
-
 # .bash_mine is created for having personalized PC specific setup
 touch "$HOME"/.bash_mine
 
@@ -28,7 +26,21 @@ then
     source "$OSUM_DOT_FILES/.bash_common"
 fi
 
-rsync -avh sync/ $HOME
+SYNC_FILES="$OSUM_DOT_FILES/sync/.gitconfig_common $OSUM_DOT_FILES/sync/.inputrc"
+for file in $SYNC_FILES;
+do
+    outfile="$HOME/$(basename $file)"
+    if [[ -f $outfile ]];
+    then
+        if [[ "$(readlink $outfile)" != "$file" ]];
+        then
+            >&2 echo "$outfile already exists and not a symlink to $file. Please fix it manually"
+        fi
+        continue
+    fi
+
+    ln -s "$file" "$outfile"
+done
 
 # Include .gitconfig_common in .gitconfig
 git config --global include.path "$HOME/.gitconfig_common"
