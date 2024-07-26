@@ -3,8 +3,8 @@
 	cane = commit --amend --no-edit
 	lol = log --graph --decorate --pretty=oneline --abbrev-commit
 	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
-	fom = fetch origin master
-	rom = rebase origin/master
-	from = "!f() { git fetch origin master; git rebase origin/master; }; f"
-	cbm = "!f() { git checkout -b $1 origin/master --no-track; }; f"
-	pom = pull origin master
+	fom = fetch origin $GIT_MAIN
+	rom = rebase origin/$GIT_MAIN
+	from = "!f() { git fetch origin $GIT_MAIN; git rebase origin/$GIT_MAIN; }; f"
+	cbm = "!f() { git checkout -b $1 origin/$GIT_MAIN --no-track; }; f"
+	pom = pull origin $GIT_MAIN

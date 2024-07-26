@@ -4,7 +4,13 @@ for file in "$OSUM_DOT_FILES"/.{bash_prompt,bash_utils,aliases}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 
+# Common envvars
+export VISUAL=vim
+export EDITOR="$VISUAL"
+export BREW_HOME="$(brew --prefix)"
+export GIT_MAIN=master
 export CLICOLOR=1
+
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
 	colorflag="--color"
@@ -15,6 +21,6 @@ else # macOS `ls`
 fi
 
 # Brew bash completion
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+[[ -r "$BREW_HOME/etc/profile.d/bash_completion.sh" ]] && . "$BREW_HOME/etc/profile.d/bash_completion.sh"
 
 source "$HOME"/.bash_mine
