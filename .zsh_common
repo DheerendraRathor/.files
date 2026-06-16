@@ -25,5 +25,17 @@ if [[ -d "$BREW_HOME/share/zsh/site-functions" ]]; then
 	FPATH="$BREW_HOME/share/zsh/site-functions:$FPATH"
 fi
 autoload -Uz compinit && compinit
+# bashcompinit shim: lets zsh consume bash-style `complete` completion scripts
+autoload -Uz bashcompinit && bashcompinit
+
+# direnv: per-directory environment hook
+if hash direnv >/dev/null 2>&1; then
+	eval "$(direnv hook zsh)"
+fi
+
+# McFly: smarter Ctrl-R history search (rebinds Ctrl-R, so init after completion)
+if hash mcfly >/dev/null 2>&1; then
+	eval "$(mcfly init zsh)"
+fi
 
 source "$HOME"/.zsh_mine
