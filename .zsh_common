@@ -11,6 +11,15 @@ export BREW_HOME="$(brew --prefix)"
 export GIT_MAIN=master
 export CLICOLOR=1
 
+# History
+HISTSIZE=10000
+SAVEHIST=10000
+setopt EXTENDED_HISTORY       # timestamp each entry
+setopt HIST_IGNORE_ALL_DUPS   # drop older duplicate of a command
+setopt HIST_IGNORE_SPACE      # don't record commands starting with a space
+setopt HIST_REDUCE_BLANKS     # tidy whitespace before saving
+setopt SHARE_HISTORY          # share live history across open sessions
+
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
 	colorflag="--color"

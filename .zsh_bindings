@@ -24,3 +24,10 @@ LISTMAX=100
 setopt AUTO_LIST    # list all matches immediately when ambiguous (show-all-if-ambiguous)
 setopt LIST_TYPES   # mark file types in the list like `ls -F` (visible-stats)
 unsetopt BEEP       # no terminal bell
+
+setopt COMPLETE_IN_WORD   # complete from the cursor, not just end of word
+setopt ALWAYS_TO_END      # move cursor to end of word after completing
+setopt INTERACTIVE_COMMENTS  # allow # comments when typing interactively
+
+# Arrow-key selectable completion menu
+zstyle ':completion:*' menu select
