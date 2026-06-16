@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+#
+# zsh (ZLE) equivalents of the readline settings in sync/.inputrc.
+# zsh does not use readline / .inputrc; key bindings go through `bindkey`
+# and completion behavior through `setopt` / `zstyle`.
+
+# Up/Down: use the already-typed text as a prefix to search history.
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+
+# Alt/Meta + Delete: delete the following word.
+bindkey '^[[3;3~' kill-word
+
+# Case-insensitive completion (completion-ignore-case on).
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+# Colorize the completion list like `ls --color` (colored-stats On).
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# Ask before listing when there are more than this many matches
+# (completion-query-items).
+LISTMAX=100
+
+setopt AUTO_LIST    # list all matches immediately when ambiguous (show-all-if-ambiguous)
+setopt LIST_TYPES   # mark file types in the list like `ls -F` (visible-stats)
+unsetopt BEEP       # no terminal bell

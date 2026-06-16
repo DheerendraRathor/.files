@@ -1,0 +1,148 @@
+#!/usr/bin/env zsh
+#
+# DESCRIPTION:
+#
+#   Set the zsh prompt according to:
+#    * the active virtualenv
+#    * the active virtualgo
+#    * the branch/status of the current git repository
+#    * the return value of the previous command
+#
+# USAGE:
+#
+#   1. Save this file as ~/.zsh_prompt
+#   2. Add the following line to the end of your ~/.zshrc:
+#        . ~/.zsh_prompt
+#
+# LINEAGE:
+#
+#   zsh port of .bash_prompt (based on work by insin)
+#
+#   https://gist.github.com/insin/1425703
+
+# The various color codes that we can use to color our prompt. These use zsh
+# prompt-escape syntax so zsh computes the visible prompt width correctly.
+        RED="%F{red}"
+     YELLOW="%B%F{yellow}"
+      GREEN="%F{green}"
+       BLUE="%B%F{blue}"
+  LIGHT_RED="%B%F{red}"
+LIGHT_GREEN="%B%F{green}"
+      WHITE="%B%F{white}"
+ LIGHT_GRAY="%F{white}"
+ COLOR_NONE="%f%b"
+
+# Detect whether the current directory is a git repository.
+is_git_repository() {
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1
+}
+
+# Determine the branch/state information for this git repository.
+set_git_branch() {
+  local is_monorepo branch git_status state remote count
+
+  # Monorepo check (They suck!)
+  is_monorepo="$(git config --get core.monorepo)"
+  if [[ "${is_monorepo}" == "true" ]]; then
+    branch="$(git branch --show-current)"
+    if [[ -z "$branch" ]]; then
+      BRANCH=""
+      return
+    fi
+    BRANCH="${WHITE}(${branch})${COLOR_NONE}"
+    return
+  fi
+
+  # Capture the output of the "git status" command.
+  git_status="$(git status 2> /dev/null)"
+
+  # Set color based on clean/staged/dirty.
+  if [[ ${git_status} == *"working tree clean"* ]]; then
+    state="${GREEN}"
+  elif [[ ${git_status} == *"Changes to be committed"* ]]; then
+    state="${YELLOW}"
+  else
+    state="${LIGHT_RED}"
+  fi
+
+  # Set arrow icon based on status against remote.
+  remote=""
+  if [[ ${git_status} =~ "Your branch is (.*) of (.*) by ([[:digit:]]) commit." ]]; then
+    count=${match[3]}
+    if [[ ${match[1]} == "ahead" ]]; then
+      remote="↑"
+    else
+      remote="↓"
+    fi
+    remote="$remote$count"
+  fi
+  if [[ ${git_status} =~ "Your branch and (.*) have diverged" ]]; then
+    remote="↕"
+  fi
+
+  # Get the name of the branch.
+  branch=""
+  if [[ ${git_status} =~ "On branch ([^[:space:]]*)" ]]; then
+    branch=${match[1]}
+  fi
+
+  # Set the final branch string.
+  BRANCH="${state}(${branch}${remote})${COLOR_NONE} "
+}
+
+# Return the prompt symbol to use, colorized based on the return value of the
+# previous command.
+set_prompt_symbol() {
+  if [[ $1 -eq 0 ]]; then
+      PROMPT_SYMBOL="%#"
+  else
+      PROMPT_SYMBOL="${LIGHT_RED}%#${COLOR_NONE}"
+  fi
+}
+
+# Determine active Python virtualenv details.
+set_virtualenv() {
+  if [[ -z "$VIRTUAL_ENV" ]]; then
+      PYTHON_VIRTUALENV=""
+  else
+      PYTHON_VIRTUALENV="${BLUE}[Py:$(basename "$VIRTUAL_ENV")]${COLOR_NONE} "
+  fi
+}
+
+# Determine Go virtualenv
+set_virtual_go() {
+    if [[ -z "$VIRTUALGO" ]]; then
+        VIRTUAL_GO=""
+    else
+        VIRTUAL_GO="${BLUE}[Go:$VIRTUALGO]${COLOR_NONE} "
+    fi
+}
+
+# Set the full zsh prompt.
+set_zsh_prompt() {
+  # Capture the PROMPT_SYMBOL variable first so we don't lose the return value
+  # of the last command.
+  set_prompt_symbol $?
+
+  # Set the PYTHON_VIRTUALENV variable.
+  set_virtualenv
+
+  # Set the Go virtualenv vg
+  set_virtual_go
+
+  # Set the BRANCH variable.
+  if is_git_repository ; then
+    set_git_branch
+  else
+    BRANCH=''
+  fi
+
+  # Set the zsh prompt variable.
+  PROMPT="
+${PYTHON_VIRTUALENV}${VIRTUAL_GO}${GREEN}%n@%m ${YELLOW}%~${COLOR_NONE} ${BRANCH}
+${PROMPT_SYMBOL} "
+}
+
+# Tell zsh to execute this function just before displaying its prompt.
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd set_zsh_prompt

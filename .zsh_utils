@@ -1,0 +1,46 @@
+#!/usr/bin/env zsh
+
+dedup_pathis_str() {
+    local result="$(echo "$1" | tr ':' '\n' | awk '!a[$0]++' | paste -d ':' -s /dev/stdin)"
+    echo $result
+    return 0
+    # export PATH=$(echo "$PATH" | tr ':' '\n' | awk '!a[$0]++' | xargs | sed 's/ /,/g')
+}
+
+mkp() {
+    temp_path="$1:$PATH"
+
+    export PATH="$(dedup_pathis_str "$temp_path")"
+}
+
+rmp() {
+    # NOTE: in zsh the lowercase `path` is tied to `PATH`, so use other names.
+    local entry
+    local new_paths
+    new_paths=()
+    for entry in ${(s.:.)PATH}
+    do
+        if [[ "$1" == "$entry" ]];
+        then
+            continue
+        fi
+
+        new_paths+=("$entry")
+    done
+
+    local joined_path="${(j.:.)new_paths}"
+    export PATH="$(dedup_pathis_str "$joined_path")"
+}
+
+sync_files() {
+    if [ -z ${OSUM_DOT_FILES+x} ];
+    then
+        >&2 echo "OSUM_DOT_FILES is not set"
+        return 1
+    fi
+
+    cd "$OSUM_DOT_FILES"
+    git pull origin master
+
+    source "$HOME/.zshrc"
+}
